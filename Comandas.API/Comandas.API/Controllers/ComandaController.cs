@@ -1,4 +1,5 @@
-﻿using Comandas.API.Models;
+﻿using Comandas.API.DTOs;
+using Comandas.API.Models;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -49,13 +50,28 @@ namespace Comandas.API.Controllers
 
         // POST api/<ComandaController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IResult Post([FromBody] ComandaCreateRequest comandaCreate)
         {
+            if (comandaCreate.NomeCliente.Length < 3) 
+                return Results.BadRequest("O nome do cliente deve ter pelo menos 3 caracteres");
+            if (comandaCreate.NumeroMesa <= 0)
+                return Results.BadRequest("O número da mesa deve ser maior que zero");
+            if (comandaCreate.CardapioItemIds.Length == 0)
+                return Results.BadRequest("A comanda deve ter pelo menos um item do cardápio");
+            var novaComanda = new Comanda
+            {
+                Id = comandas.Count + 1,
+                NomeCliente = comandaCreate.NomeCliente,
+                NumeroMesa = comandaCreate.NumeroMesa,
+            };
+            comandas.Add(novaComanda);
+            return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
+
         }
 
         // PUT api/<ComandaController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public void Put(int id, [FromBody] ComandaUpdateRequest comandaUpdate)
         {
         }
 
