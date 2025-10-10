@@ -52,14 +52,33 @@ namespace Comandas.API.Controllers
 
         // POST api/<MesaController>
         [HttpPost]
-        public void Post([FromBody] MesaCreateRequest mesacreate)
+        public IResult Post([FromBody] MesaCreateRequest mesacreate)
         {
+            if (mesacreate.NumeroMesa <= 0)
+                return Results.BadRequest("O número da mesa deve ser maior que zero.");
+            var NovaMesa = new Mesa
+            {
+                Id = mesas.Count + 1,
+                NumeroMesa = mesacreate.NumeroMesa,
+                SituacaoMesa = mesacreate.SituacaoMesa
+            };
+            mesas.Add(NovaMesa);
+            return Results.Created($"/api/mesa/{NovaMesa.Id}", NovaMesa);
         }
 
         // PUT api/<MesaController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] MesaUpdateRequest mesaUpdate)
+        public IResult Put(int id, [FromBody] MesaUpdateRequest mesaUpdate)
         {
+            var mesa = mesas.FirstOrDefault(m => m.Id == id);
+            if (mesa is null)
+            return Results.NotFound($"Mesa do id {id} não encontrada.");
+            mesa.NumeroMesa = mesaUpdate.NumeroMesa;
+            mesa.SituacaoMesa = mesaUpdate.SituacaoMesa;
+            return Results.Ok(mesa);
+
+
+
         }
 
         // DELETE api/<MesaController>/5
