@@ -110,10 +110,16 @@ namespace Comandas.API.Controllers
         public IResult Put(int id, [FromBody] ComandaUpdateRequest comandaUpdate)
         {
             var comanda = comandas.FirstOrDefault(c => c.Id == id);
-            if (comanda is null)    
+            if (comanda is null)
+                //SE NÃO ENCONTROU A COMANDA PESQUISADA
+
+                //RETORNA UM COD 404 NÃO ENCOTRADO
                 return Results.NotFound("Comanda não encontrada");
+
+            // VALIDAR O NOME DO CLIENTE
             if (comandaUpdate.NomeCliente.Length < 3)
                 return Results.BadRequest("O nome do cliente deve ter pelo menos 3 caracteres");
+            // VALIDAR O NÚMERO DA MESA
             if (comandaUpdate.NumeroMesa <= 0)
                 return Results.BadRequest("O número da mesa deve ser maior que zero");
             comanda.NumeroMesa = comandaUpdate.NumeroMesa;
