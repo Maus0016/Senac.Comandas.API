@@ -11,20 +11,38 @@ namespace Comandas.API.Controllers
     public class ComandaController : ControllerBase
     {
        
-        public List<Comanda> comandas = new List<Comanda>
+        static List<Comanda> comandas = new List<Comanda>
         {
             new Comanda
             {
                 Id = 1,
                 NomeCliente = "João Silva",
-                NumeroMesa = 5
+                NumeroMesa = 1,
+                Items = new List<ComandaItem>
+                {
+                    new ComandaItem
+                    {
+                        Id = 1,
+                        CardapioItemId = 1,
+                        ComandaId = 1,
+                    }
+                }
             },
             new Comanda
             {
                 Id = 2,
                 NomeCliente = "Maria Oliveira",
-                NumeroMesa = 3
+                NumeroMesa = 3,
+                Items = new List<ComandaItem>
+                {
+                    new ComandaItem
+                    {   Id = 2,
+                        CardapioItemId = 2,
+                        ComandaId = 2,
+                    }
+                }
             },
+
 
         };
 
@@ -64,6 +82,24 @@ namespace Comandas.API.Controllers
                 NomeCliente = comandaCreate.NomeCliente,
                 NumeroMesa = comandaCreate.NumeroMesa,
             };
+            //CRIA UM VARIAVEL DO TIPO LISTA DE ITENS
+            var comandaItens = new List<ComandaItem>();
+            //PERCORRE OS IDS DOS ITENS DO CARDAPIO
+            foreach(int cardapioItemId in comandaCreate.CardapioItemIds)
+            {
+                //CRIA UM NOVO ITEM DE COMANDA
+                var comandaItem = new ComandaItem
+                {
+                    Id = comandaItens.Count + 1,
+                    CardapioItemId = cardapioItemId,
+                    ComandaId = novaComanda.Id,
+                };
+                //ADICIONA O ITEM NA LISTA DE ITENS
+                comandaItens.Add(comandaItem);
+            }
+            //ATRIBUI A LISTA DE ITENS NA COMANDA
+            novaComanda.Items = comandaItens;
+            //ADICIONA A COMANDA NA LISTA DE COMANDAS
             comandas.Add(novaComanda);
             return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
 
@@ -76,9 +112,13 @@ namespace Comandas.API.Controllers
             var comanda = comandas.FirstOrDefault(c => c.Id == id);
             if (comanda is null)    
                 return Results.NotFound("Comanda não encontrada");
-                 comanda.NumeroMesa = comandaUpdate.NumeroMesa;
+            if (comandaUpdate.NomeCliente.Length < 3)
+                return Results.BadRequest("O nome do cliente deve ter pelo menos 3 caracteres");
+            if (comandaUpdate.NumeroMesa <= 0)
+                return Results.BadRequest("O número da mesa deve ser maior que zero");
+            comanda.NumeroMesa = comandaUpdate.NumeroMesa;
             comanda.NomeCliente = comandaUpdate.NomeCliente;
-            return Results.Ok(comanda);
+            return Results.NoContent();
         }
 
         // DELETE api/<ComandaController>/5

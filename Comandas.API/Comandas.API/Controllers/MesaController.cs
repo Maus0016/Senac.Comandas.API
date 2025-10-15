@@ -75,7 +75,7 @@ namespace Comandas.API.Controllers
             return Results.NotFound($"Mesa do id {id} não encontrada.");
             mesa.NumeroMesa = mesaUpdate.NumeroMesa;
             mesa.SituacaoMesa = mesaUpdate.SituacaoMesa;
-            return Results.Ok(mesa);
+            return Results.NoContent();
 
 
 

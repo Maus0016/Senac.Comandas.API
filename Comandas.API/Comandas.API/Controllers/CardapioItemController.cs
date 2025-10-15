@@ -101,7 +101,7 @@ namespace Comandas.API.Controllers
                  cardapioItem.Descricao = cardapio.Descricao;
                  cardapioItem.Preco = cardapio.Preco;
                  cardapioItem.PossuiPreparo = cardapio.PossuiPreparo;
-            return Results.Ok(cardapioItem);
+            return Results.NoContent();
 
         }
 

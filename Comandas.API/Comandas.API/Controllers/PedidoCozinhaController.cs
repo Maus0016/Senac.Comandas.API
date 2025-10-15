@@ -68,7 +68,7 @@ namespace Comandas.API.Controllers
             if (pedidocozinha is null)
                return Results.NotFound($"Pedido de cozinha do id {id} não encontrado");
             pedidocozinha.ComandaId = pedidoCozinhaUpdate.ComandaId;
-            return Results.Ok(pedidocozinha);
+            return Results.NoContent();
         }
 
         // DELETE api/<PedidoCozinhaController>/5
