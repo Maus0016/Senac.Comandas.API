@@ -10,7 +10,7 @@ namespace Comandas.API.Controllers
     [ApiController]
     public class ComandaController : ControllerBase
     {
-       
+
         static List<Comanda> comandas = new List<Comanda>
         {
             new Comanda
@@ -57,7 +57,7 @@ namespace Comandas.API.Controllers
         public IResult Get(int id)
         {
             var comanda = comandas.FirstOrDefault(c => c.Id == id);
-       
+
             if (comanda is null)
             {
                 return Results.NotFound("Comanda não encontrada");
@@ -70,7 +70,7 @@ namespace Comandas.API.Controllers
         [HttpPost]
         public IResult Post([FromBody] ComandaCreateRequest comandaCreate)
         {
-            if (comandaCreate.NomeCliente.Length < 3) 
+            if (comandaCreate.NomeCliente.Length < 3)
                 return Results.BadRequest("O nome do cliente deve ter pelo menos 3 caracteres");
             if (comandaCreate.NumeroMesa <= 0)
                 return Results.BadRequest("O número da mesa deve ser maior que zero");
@@ -85,7 +85,7 @@ namespace Comandas.API.Controllers
             //CRIA UM VARIAVEL DO TIPO LISTA DE ITENS
             var comandaItens = new List<ComandaItem>();
             //PERCORRE OS IDS DOS ITENS DO CARDAPIO
-            foreach(int cardapioItemId in comandaCreate.CardapioItemIds)
+            foreach (int cardapioItemId in comandaCreate.CardapioItemIds)
             {
                 //CRIA UM NOVO ITEM DE COMANDA
                 var comandaItem = new ComandaItem
@@ -129,8 +129,15 @@ namespace Comandas.API.Controllers
 
         // DELETE api/<ComandaController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IResult Delete(int id)
         {
+            var comanda = comandas.FirstOrDefault(c => c.Id == id);
+            if (comanda is null)
+                return Results.NotFound("Comanda não encontrada");
+            var comandaremovida = comandas.Remove(comanda);
+            if (comandaremovida)
+                return Results.NoContent();
+            return Results.StatusCode(500);
         }
     }
 }

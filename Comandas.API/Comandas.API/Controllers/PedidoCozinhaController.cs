@@ -10,8 +10,7 @@ namespace Comandas.API.Controllers
     [ApiController]
     public class PedidoCozinhaController : ControllerBase
     {
-
-        public List<PedidoCozinha> pedidoCozinha = new List<PedidoCozinha>
+        static List<PedidoCozinha> pedidoCozinha = new List<PedidoCozinha>
         {
             new PedidoCozinha
             {
@@ -73,8 +72,16 @@ namespace Comandas.API.Controllers
 
         // DELETE api/<PedidoCozinhaController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IResult Delete(int id)
         {
+            var PedidoCozinha = pedidoCozinha.FirstOrDefault(p => p.Id == id);
+            if (PedidoCozinha is null)
+                return Results.NotFound($"Pedido de cozinha do id {id} não encontrado");
+           var PedidoCozinhaRemovido = pedidoCozinha.Remove(PedidoCozinha);
+            if(PedidoCozinhaRemovido)
+                return Results.NoContent();
+            return Results.StatusCode(500);
+
         }
     }
 }

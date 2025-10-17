@@ -12,7 +12,7 @@ namespace Comandas.API.Controllers
     public class CardapioItemController : ControllerBase // MEDIA BASE DE ControllerBase para PODER  RESPONDER A REQUESITOS HTTP
     {
 
-        public List<CardapioItem> cardapios = new List<CardapioItem>()
+        static List<CardapioItem> cardapios = new List<CardapioItem>()
         {
             new CardapioItem
                 {
@@ -107,8 +107,19 @@ namespace Comandas.API.Controllers
 
         // DELETE api/<CardapioItemController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IResult Delete(int id)
         {
+            //BUSCAR O CARDAPIO NA LISTA
+            var cardapioItem = cardapios.FirstOrDefault(c => c.Id == id);
+            //SE ESTIVER NULO RETORNA 404
+            if (cardapioItem is null)
+                return Results.NotFound($"Cardapio do id {id} não encontrado");
+            var removido = cardapios.Remove(cardapioItem);
+            // RETORNA 204 NO CONTENT
+            if (removido)
+                return Results.NoContent();
+            return Results.StatusCode(500);
+
         }
     }
 
