@@ -12,25 +12,12 @@ namespace Comandas.API.Controllers
     public class CardapioItemController : ControllerBase // MEDIA BASE DE ControllerBase para PODER  RESPONDER A REQUESITOS HTTP
     {
 
-        static List<CardapioItem> cardapios = new List<CardapioItem>()
+       private readonly ComandasDbContext _context;
+
+        public CardapioItemController(ComandasDbContext context)
         {
-            new CardapioItem
-                {
-                Id = 1,
-                Titulo = "Xis Salada",
-                Descricao = "Pão, salada, ovo, maionese",
-                Preco = 27.00M,
-                PossuiPreparo = true
-            },
-            new CardapioItem
-            {
-                Id = 2,
-                Titulo = "Xis Bacon",
-                Descricao = "Pão, salada, bacon, ovo e maionese ",
-                Preco = 22.00M,
-                PossuiPreparo = true
-            }
-        };
+            _context = context;
+        }
 
         //METODO GET que retorna a lista de cardapio
 
@@ -39,6 +26,8 @@ namespace Comandas.API.Controllers
         public IResult GetCardapios()
         {
             // CRIA UMA LISTA ESTATICA DE CARDAPIO e TRANSFORMA EM JSON
+            var cardapios = _context.CardapioItems.ToList();
+
             return Results.Ok(cardapios);
         }
 
@@ -49,7 +38,7 @@ namespace Comandas.API.Controllers
         {
             //BUSCAR NA LISTA DE CARDAPIO DE ACORDO COM id DO PARAMETRO
             // JOGA O VALOR PARA A VARIAVEL O PRIMERIRO ELEMENTO DE ACORDO COM O 
-            var cardapio = cardapios.FirstOrDefault(c => c.Id == id);
+            var cardapio = _context.CardapioItems.FirstOrDefault(c => c.Id == id);
             //RETORNA O VALOR PARA O ENDPOINT DA API
 
             if (cardapio is null)
@@ -73,13 +62,13 @@ namespace Comandas.API.Controllers
                 Results.BadRequest("O preço deve ser maior que zero.");
             var cardapioItem = new CardapioItem
             {
-                Id = cardapios.Count + 1,
                 Titulo = cardapio.Titulo,
                 Descricao = cardapio.Descricao,
                 Preco = cardapio.Preco,
                 PossuiPreparo = cardapio.PossuiPreparo
             };
-           cardapios.Add(cardapioItem);
+           _context.CardapioItems.Add(cardapioItem);
+            _context.SaveChanges();
             return Results.Created($"/api/cardapio/{cardapioItem.Id}", cardapioItem);
         }
 
@@ -93,7 +82,7 @@ namespace Comandas.API.Controllers
         [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] CardapioItemUpdateRequest cardapio)
         {
-            var cardapioItem = cardapios.FirstOrDefault(c => c.Id == id);
+            var cardapioItem = _context.CardapioItems.FirstOrDefault(c => c.Id == id);
 
             if (cardapioItem is null)
                  return Results.NotFound($"Cardapio do id {id} não encontrado");
@@ -101,6 +90,7 @@ namespace Comandas.API.Controllers
                  cardapioItem.Descricao = cardapio.Descricao;
                  cardapioItem.Preco = cardapio.Preco;
                  cardapioItem.PossuiPreparo = cardapio.PossuiPreparo;
+            _context.SaveChanges();
             return Results.NoContent();
 
         }
@@ -110,14 +100,18 @@ namespace Comandas.API.Controllers
         public IResult Delete(int id)
         {
             //BUSCAR O CARDAPIO NA LISTA
-            var cardapioItem = cardapios.FirstOrDefault(c => c.Id == id);
+            var cardapioItem = _context.CardapioItems.FirstOrDefault(c => c.Id == id);
             //SE ESTIVER NULO RETORNA 404
             if (cardapioItem is null)
                 return Results.NotFound($"Cardapio do id {id} não encontrado");
-            var removido = cardapios.Remove(cardapioItem);
+                _context.CardapioItems.Remove(cardapioItem);
+            var removido = _context.SaveChanges();
             // RETORNA 204 NO CONTENT
-            if (removido)
+            if (removido > 0)
+            {
                 return Results.NoContent();
+
+            }
             return Results.StatusCode(500);
 
         }

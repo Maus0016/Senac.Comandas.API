@@ -11,39 +11,37 @@ namespace Comandas.API.Controllers
     public class UsuarioController : ControllerBase
     {
         // GET: api/<UsuarioController>
-        static List<Usuario> usuarios = new List<Usuario>()
+        //VARIAVEL QUE REPRESENTA O BANCO DE DADOS
+        public ComandasDbContext _context { get; set; }
+
+        //Construtor 
+        public UsuarioController(ComandasDbContext context)
         {
-           new Usuario
-           {
-                Id =   1,
-                Nome = "Administador",
-                Email = "admin@admin.com",
-                Senha = "admin"
-           },
-           new Usuario
-           {
-                    Id = 2,
-                    Nome = "User",
-                    Email = "Daniel99@gmail.com",
-                    Senha = "123456"
-           }
-        };
+            _context = context;
+        }
+    
         [HttpGet]
         public IResult Get()
+            //Conectar com o banco
+            // executar a consulta SELECT * FROM USUARIOS
         {
+            var usuarios = _context.Usuarios.ToList();
+
             return Results.Ok(usuarios);
         }
 
+        //Iresult que retorna um usuario pelo id
         // GET api/<UsuarioController>/5
+
         [HttpGet("{id}")]
         public IResult Get(int id)
         {
-          var usuario = usuarios.FirstOrDefault(u => u.Id == id);
-            if (usuario is null)
+            var usuarios = _context.Usuarios.FirstOrDefault(u => u.Id == id);
+            if (usuarios is null)
             {
-                return Results.NotFound("Usuario não encontrado");
+                return Results.NotFound($"Usuario do id {id} não encontrado");
             }
-            return Results.Ok(usuario);
+            return Results.Ok(usuarios);
         }
 
         // POST api/<UsuarioController>
@@ -59,15 +57,18 @@ namespace Comandas.API.Controllers
 
             var usuario = new Usuario
             {
-                Id = usuarios.Count + 1,
                 Nome = usuarioCreate.Nome,
                 Email = usuarioCreate.Email,
                 Senha = usuarioCreate.Senha
             };
 
-            //ADICIONA O USUARIO NA LISTA   
-               usuarios.Add(usuario);
-             return Results.Created($"/api/usuario/{usuario.Id}", usuario);
+            //ADICIONA O USUARIO NA LISTA
+            //Adiciona o usuario no contexto do banco de dados
+            _context.Usuarios.Add(usuario);
+
+            //Executa o INSERT INTO Usuarios (Id, Nome, Email, Senha) VALUES (...)
+            _context.SaveChanges();
+            return Results.Created($"/api/usuario/{usuario.Id}", usuario);
         }
         //PUT api/<UsuarioController>/5
         /// <summary>
@@ -81,31 +82,39 @@ namespace Comandas.API.Controllers
         [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] UsuarioUpdateRequest usuarioUpdate)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id);
+            //Se não encontrar retorna not found
             if (usuario is null)
             
                 return Results.NotFound($"Usuario do id {id} não encontrado.");
+
+            // Atualiza o Usuaruio
                 usuario.Nome = usuarioUpdate.Nome;
                 usuario.Email = usuarioUpdate.Email;
                 usuario.Senha = usuarioUpdate.Senha;
-            return Results.NoContent();
-            
+
+            //Update Usuario set Nome = ..., Email = ..., Senha = ... where Id = ...
+            _context.SaveChanges();
+            //Retorna no Context
+            return Results.NoContent(); 
         }
 
         // DELETE api/<UsuarioController>/5
         [HttpDelete("{id}")]
         public IResult Delete(int id)
         {
-            var user = usuarios.FirstOrDefault(c => c.Id == id);
-
+            var user = _context.Usuarios.FirstOrDefault(c => c.Id == id);
             if(user is null)
                 return Results.NotFound($"Usuario do {id} não encontrado");
-           var userRemovido = usuarios.Remove(user);
 
-            if(userRemovido)
+           _context.Usuarios.Remove(user);
+            var removido = _context.SaveChanges();
+            if (removido > 0)
+            {
                 return Results.NoContent();
-            return Results.StatusCode(500);
+            }
 
+            return Results.StatusCode(500);
         }
     }
 }
