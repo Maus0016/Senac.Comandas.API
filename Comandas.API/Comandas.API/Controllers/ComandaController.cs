@@ -59,19 +59,25 @@ namespace Comandas.API.Controllers
             _context.SaveChanges();
             return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
             //CRIA UM VARIAVEL DO TIPO LISTA DE ITENS
+            
             var comandaItens = new List<ComandaItem>();
+
             //PERCORRE OS IDS DOS ITENS DO CARDAPIO
+
             foreach (int cardapioItemId in comandaCreate.CardapioItemIds)
             {
                 //CRIA UM NOVO ITEM DE COMANDA
                 var comandaItem = new ComandaItem
                 {
-                    Id = comandaItens.Count + 1,
                     CardapioItemId = cardapioItemId,
-                    ComandaId = novaComanda.Id,
+                    Comanda = novaComanda,
                 };
                 //ADICIONA O ITEM NA LISTA DE ITENS
                 comandaItens.Add(comandaItem);
+
+                //CRIAR O PEDIDO DE COZINHA E O ITEM DE ACORDO COM O CADASTRO DO CARDAPIO possui preparo
+
+                var cardapioItem = _context.CardapioItems.FirstOrDefault(c => c.Id == cardapioItemId);
             }
             //ATRIBUI A LISTA DE ITENS NA COMANDA
             novaComanda.Items = comandaItens;
