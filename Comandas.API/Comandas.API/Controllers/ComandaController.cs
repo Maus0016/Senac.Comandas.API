@@ -13,7 +13,7 @@ namespace Comandas.API.Controllers
 
         public ComandasDbContext _context { get; set; }
 
-        public ComandaController(ComandasDbContext context)
+        public ComandaController(ComandasDbContext context) 
         {
             _context = context;
         }
@@ -78,6 +78,21 @@ namespace Comandas.API.Controllers
                 //CRIAR O PEDIDO DE COZINHA E O ITEM DE ACORDO COM O CADASTRO DO CARDAPIO possui preparo
 
                 var cardapioItem = _context.CardapioItems.FirstOrDefault(c => c.Id == cardapioItemId);
+
+                if (cardapioItem!.PossuiPreparo)
+                {
+                    var pedido = new PedidoCozinha
+                    {
+                      Comanda = novaComanda,
+                    };
+                    var pedidoItem = new PedidoCozinhaItem
+                    {
+                        ComandaItem = comandaItem,
+                        PedidoCozinha = pedido,
+                    };
+                    _context.PedidoCozinhas.Add(pedido);
+                    _context.PedidoCozinhaItems.Add(pedidoItem);
+                }
             }
             //ATRIBUI A LISTA DE ITENS NA COMANDA
             novaComanda.Items = comandaItens;
