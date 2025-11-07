@@ -55,11 +55,7 @@ namespace Comandas.API.Controllers
                 NumeroMesa = comandaCreate.NumeroMesa,
             };
 
-            _context.Comandas.Add(novaComanda);
-            _context.SaveChanges();
-            return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
-            //CRIA UM VARIAVEL DO TIPO LISTA DE ITENS
-            
+
             var comandaItens = new List<ComandaItem>();
 
             //PERCORRE OS IDS DOS ITENS DO CARDAPIO
@@ -83,7 +79,7 @@ namespace Comandas.API.Controllers
                 {
                     var pedido = new PedidoCozinha
                     {
-                      Comanda = novaComanda,
+                        Comanda = novaComanda,
                     };
                     var pedidoItem = new PedidoCozinhaItem
                     {
@@ -99,8 +95,25 @@ namespace Comandas.API.Controllers
             //ADICIONA A COMANDA NA LISTA DE COMANDAS
             _context.Comandas.Add(novaComanda);
             _context.SaveChanges();
-            return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
+            
+            
 
+            //CRIA A RESPOSTA DA REQUISIÇÃO.
+            var response = new ComandaCreateResponse
+            {
+                Id = novaComanda.Id,
+                NomeCliente = novaComanda.NomeCliente,
+                NumeroMesa = novaComanda.NumeroMesa,
+                Items = novaComanda.Items.Select(i => new ComandaItemResponse
+                {
+                    Id = i.Id,
+                    Titulo = _context.CardapioItems.FirstOrDefault(c => c.Id == i.CardapioItemId)!.Titulo
+                }).ToList()
+            };
+
+            return Results.Created($"/api/comanda/{novaComanda.Id}", response);
+            //CRIA UM VARIAVEL DO TIPO LISTA DE ITENS
+          
         }
 
         // PUT api/<ComandaController>/5

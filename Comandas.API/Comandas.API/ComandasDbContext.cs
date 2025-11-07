@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Comandas.API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Comandas.API
 {
@@ -29,8 +30,21 @@ namespace Comandas.API
                 {
                     Id = 1,
                     NumeroMesa = 1,
-                    SituacaoMesa = 0 // Livre
+                    SituacaoMesa = (int)SituacaoMesa.Livre 
+                },
+                new Models.Mesa
+                {
+                    Id = 2,
+                    NumeroMesa = 2,
+                    SituacaoMesa = (int)SituacaoMesa.Ocupada
+                },
+                new Models.Mesa
+                {
+                    Id = 3,
+                    NumeroMesa = 3,
+                    SituacaoMesa = (int)SituacaoMesa.Reservada
                 }
+
                 );
             base.OnModelCreating(modelBuilder);
 
@@ -45,7 +59,24 @@ namespace Comandas.API
                     Preco = 6.50m,
                     PossuiPreparo = true
 
+                },
+                new Models.CardapioItem
+                {
+                    Id = 2,
+                    Titulo = "Refrigerante Lata",
+                    Descricao = "Refrigerante Lata 350ml",
+                    Preco = 5.00m,
+                    PossuiPreparo = false
+                },
+                new Models.CardapioItem
+                {
+                    Id = 3,
+                    Titulo = "Pizza Média",
+                    Descricao = "Pizza média dois sabores com 8 pedaços",
+                    Preco = 25.00m,
+                    PossuiPreparo = true
                 }
+
                 );
             base.OnModelCreating(modelBuilder);
 

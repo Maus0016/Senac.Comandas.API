@@ -48,6 +48,22 @@ namespace Comandas.API.Migrations
                             PossuiPreparo = true,
                             Preco = 6.50m,
                             Titulo = "Coxinha"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Descricao = "Refrigerante Lata 350ml",
+                            PossuiPreparo = false,
+                            Preco = 5.00m,
+                            Titulo = "Refrigerante Lata"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Descricao = "Pizza média dois sabores com 8 pedaços",
+                            PossuiPreparo = true,
+                            Preco = 25.00m,
+                            Titulo = "Pizza Média"
                         });
                 });
 
@@ -110,6 +126,18 @@ namespace Comandas.API.Migrations
                             Id = 1,
                             NumeroMesa = 1,
                             SituacaoMesa = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            NumeroMesa = 2,
+                            SituacaoMesa = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            NumeroMesa = 3,
+                            SituacaoMesa = 2
                         });
                 });
 

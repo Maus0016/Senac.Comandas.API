@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Comandas.API.Migrations
 {
     [DbContext(typeof(ComandasDbContext))]
-    [Migration("20251104232120_versao1")]
-    partial class versao1
+    [Migration("20251106230220_v1")]
+    partial class v1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,32 @@ namespace Comandas.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CardapioItems");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Descricao = "Coxinha de frango com catupiry",
+                            PossuiPreparo = true,
+                            Preco = 6.50m,
+                            Titulo = "Coxinha"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Descricao = "Refrigerante Lata 350ml",
+                            PossuiPreparo = false,
+                            Preco = 5.00m,
+                            Titulo = "Refrigerante Lata"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Descricao = "Pizza média dois sabores com 8 pedaços",
+                            PossuiPreparo = true,
+                            Preco = 25.00m,
+                            Titulo = "Pizza Média"
+                        });
                 });
 
             modelBuilder.Entity("Comandas.API.Models.Comanda", b =>
@@ -96,6 +122,26 @@ namespace Comandas.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Mesas");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            NumeroMesa = 1,
+                            SituacaoMesa = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            NumeroMesa = 2,
+                            SituacaoMesa = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            NumeroMesa = 3,
+                            SituacaoMesa = 2
+                        });
                 });
 
             modelBuilder.Entity("Comandas.API.Models.PedidoCozinha", b =>
@@ -178,6 +224,15 @@ namespace Comandas.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "admin@admin.com",
+                            Nome = "Admin",
+                            Senha = "123"
+                        });
                 });
 
             modelBuilder.Entity("Comandas.API.Models.ComandaItem", b =>
