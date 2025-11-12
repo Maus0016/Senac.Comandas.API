@@ -135,7 +135,46 @@ namespace Comandas.API.Controllers
                 return Results.BadRequest("O número da mesa deve ser maior que zero");
             comanda.NumeroMesa = comandaUpdate.NumeroMesa;
             comanda.NomeCliente = comandaUpdate.NomeCliente;
+            //ITENS
+            foreach (var item in comandaUpdate.Itens)
+            {
+                if (item.Id > 0 && item.Remove == true)
+                {
+                    //REMOVIDO
+                    RemoverItemComanda(item.Id);
+                }
+                //SE cardapioitemid foi informado
+                if (item.CardapioItemId > 0)
+                { 
+                    //INSERIDO
+                    InserirItemComanda(comanda, item.CardapioItemId);
+                }
+            }
+            _context.SaveChanges();
+
             return Results.NoContent();
+        }
+
+        private void InserirItemComanda(Comanda comanda, int cardapioItemId)
+        {
+            _context.ComandaItems.Add(
+            new ComandaItem
+            {
+                CardapioItemId = cardapioItemId,
+                Comanda = comanda,
+            });
+        }
+
+        private void RemoverItemComanda(int id)
+        {
+            //CONSULTA O ITEM DA COMANDA PELO ID
+            var comandaItem = _context.ComandaItems.FirstOrDefault(ci => ci.Id == id);
+            if (comandaItem is not null)
+            {
+                //REMOVE O ITEM DA COMANDA
+                _context.ComandaItems.Remove(comandaItem);
+            }
+                
         }
 
         // DELETE api/<ComandaController>/5
