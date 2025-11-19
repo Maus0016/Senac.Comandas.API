@@ -15,6 +15,12 @@ namespace Comandas.API.Models
         public decimal Preco { get; set; }
 
         public bool PossuiPreparo { get; set; }
+        public int? CategoriaCardapioId { get; set; }
+
+        public CategoriaCardapio? CategoriaCardapio { get; set; }
+
+
+
 
 
     }
