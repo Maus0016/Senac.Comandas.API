@@ -1,6 +1,7 @@
 ﻿using Comandas.API.DTOs;
 using Comandas.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -26,7 +27,7 @@ namespace Comandas.API.Controllers
         public IResult GetCardapios()
         {
             // CRIA UMA LISTA ESTATICA DE CARDAPIO e TRANSFORMA EM JSON
-            var cardapios = _context.CardapioItems.ToList();
+            var cardapios = _context.CardapioItems.Include(c => c.CategoriaCardapio).ToList();
 
             return Results.Ok(cardapios);
         }
@@ -38,7 +39,11 @@ namespace Comandas.API.Controllers
         {
             //BUSCAR NA LISTA DE CARDAPIO DE ACORDO COM id DO PARAMETRO
             // JOGA O VALOR PARA A VARIAVEL O PRIMERIRO ELEMENTO DE ACORDO COM O 
-            var cardapio = _context.CardapioItems.FirstOrDefault(c => c.Id == id);
+            var cardapio = _context.CardapioItems.Include(ci => ci.CategoriaCardapio).FirstOrDefault(c => c.Id == id);
+
+            //SELECTE * FROM CardapioItems
+            //INNER JOIN CategoriaCardapios ON CardapioItems.CategoriaCardapioId = CategoriaCardapios.Id
+            // WHERE CardapioItems.Id = id
             //RETORNA O VALOR PARA O ENDPOINT DA API
 
             if (cardapio is null)
@@ -60,6 +65,16 @@ namespace Comandas.API.Controllers
                 Results.BadRequest("A descricao do cardápio deve ter no minimo 5 caracteres.");
             if (cardapio.Preco <= 0)
                 Results.BadRequest("O preço deve ser maior que zero.");
+
+            //VALIDAÇÃO DE CATEGORIA SE FOR PREENCHIDA
+            if (cardapio.CategoriaCardapioId.HasValue)
+            {
+                var categoriaExists = _context.CategoriaCardapios
+                    .FirstOrDefault(c => c.Id == cardapio.CategoriaCardapioId);
+                if (categoriaExists is null)
+                    return Results.BadRequest("Categoria de cardápio inválida.");
+            }
+            
             var cardapioItem = new CardapioItem
             {
                 Titulo = cardapio.Titulo,
@@ -87,10 +102,26 @@ namespace Comandas.API.Controllers
 
             if (cardapioItem is null)
                  return Results.NotFound($"Cardapio do id {id} não encontrado");
+            //SE CATEGORIA INFORMADA
+            if (cardapio.CategoriaCardapioId.HasValue)
+            {
+                // CONSULTA NO BANCO PELO ID DA CATEGORIA
+               var categoria = _context.CategoriaCardapios
+                    .FirstOrDefault(c => c.Id == cardapio.CategoriaCardapioId);
+                //SE O RETORNO DA CONSULTA RETORNOU NULO
+                if (categoria is null)
+                    return Results.BadRequest("Categoria de cardápio inválida.");
+            }
+
                  cardapioItem.Titulo = cardapio.Titulo;
                  cardapioItem.Descricao = cardapio.Descricao;
                  cardapioItem.Preco = cardapio.Preco;
                  cardapioItem.PossuiPreparo = cardapio.PossuiPreparo;
+                 cardapioItem.CategoriaCardapioId = cardapio.CategoriaCardapioId;
+
+
+
+
             _context.SaveChanges();
             return Results.NoContent();
 

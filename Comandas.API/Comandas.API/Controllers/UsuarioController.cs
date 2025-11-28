@@ -1,6 +1,9 @@
 ﻿using Comandas.API.DTOs;
 using Comandas.API.Models;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using LoginRequest = Comandas.API.DTOs.LoginRequest;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -54,6 +57,10 @@ namespace Comandas.API.Controllers
                 return Results.BadRequest("O nome deve ter no minimo 3 caracteres.");
             if (usuarioCreate.Email.Length < 5 || !usuarioCreate.Email.Contains("@"))
                 return Results.BadRequest("O email deve ser válido.");
+
+            var emailExistente = _context.Usuarios.FirstOrDefault(u => u.Email == usuarioCreate.Email);
+            if (emailExistente is not null)
+                return Results.BadRequest("O email já está em uso.");
 
             var usuario = new Usuario
             {
@@ -116,5 +123,21 @@ namespace Comandas.API.Controllers
 
             return Results.StatusCode(500);
         }
-    }
+
+        // CRIAR METODO DE LOGIN
+        // POST api/usuario/login
+
+        [HttpPost("login")]
+        public IResult Login([FromBody] LoginRequest loginRequest)
+        {
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == loginRequest.Email && u.Senha == loginRequest.Senha);
+            //401
+            if (usuario is null)
+            {
+                return Results.Unauthorized();
+            }
+            //200
+            return Results.Ok("Usuario autenticado");
+        }
+    } 
 }

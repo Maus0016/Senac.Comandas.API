@@ -10,6 +10,5 @@ namespace Comandas.API.Models
 
         public string? Descricao { get; set; } = default!;
 
-        public ICollection<CardapioItem>? Itens { get; set; }
     }
 }

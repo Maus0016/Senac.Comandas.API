@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Comandas.API;
-using Comandas.API.Models;
+using Comandas.API.Models; 
 
 namespace Comandas.API.Controllers
 {

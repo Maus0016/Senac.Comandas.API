@@ -18,10 +18,6 @@ namespace Comandas.API.Models
         public int? CategoriaCardapioId { get; set; }
 
         public CategoriaCardapio? CategoriaCardapio { get; set; }
-
-
-
-
-
+    
     }
 }
