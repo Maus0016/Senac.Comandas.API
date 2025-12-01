@@ -107,6 +107,6 @@ namespace Comandas.API
         public DbSet<Models.PedidoCozinhaItem> PedidoCozinhaItems { get; set; } = default!;
         public DbSet<Models.CardapioItem> CardapioItems { get; set; } = default!;
         public DbSet<Models.CategoriaCardapio> CategoriaCardapios { get; set; } = default!;
-
+        public object CardapioItens { get; internal set; }
     }
 }

@@ -4,46 +4,38 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-//Configurar o contexto do banco de cados para usar InMemory Database
 builder.Services.AddDbContext<ComandasDbContext>(options =>
     options.UseSqlite("DataSource=Comandas.db")
 );
- 
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Adiciona o serviço CORS
+// CORS - ALLOW EVERYTHING FOR DEVELOPMENT
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("MinhaPolitica", policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("http://localhost:5500", "http://127.0.0.1:5501", "http://127.0.0.1:5500", "http://127.0.0.1") // Origens permitidas
-        .AllowAnyHeader() // Permite qualquer cabeçalho
-        .AllowAnyMethod(); // Permite qualquer método HTTP
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
 var app = builder.Build();
 
-// Configura o middleware CORS
+// Use CORS
+app.UseCors("AllowAll");
 
-
-app.UseCors("MinhaPolitica");
-
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
-//}
+}
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
