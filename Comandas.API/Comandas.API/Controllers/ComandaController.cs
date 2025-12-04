@@ -21,7 +21,19 @@ namespace Comandas.API.Controllers
         [HttpGet]
         public IResult Get()
         {
-            var comandas = _context.Comandas.ToList();
+            //SELECT * FROM COMANDAS
+            var comandas = _context.Comandas.Select( C => new ComandaCreateResponse
+            {
+                Id = C.Id,
+                NomeCliente = C.NomeCliente,
+                NumeroMesa = C.NumeroMesa,
+                Items = C.Items.Select(i => new ComandaItemResponse
+                {
+                    Id = i.Id,
+                    Titulo = _context.CardapioItems.FirstOrDefault(c => c.Id == i.CardapioItemId)!.Titulo
+                }).ToList()
+            }
+            ).ToList();
             return Results.Ok(comandas);
         }
 
