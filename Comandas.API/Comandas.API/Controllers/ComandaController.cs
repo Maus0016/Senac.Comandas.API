@@ -41,7 +41,17 @@ namespace Comandas.API.Controllers
         [HttpGet("{id}")]
         public IResult Get(int id)
         {
-            var comanda = _context.Comandas.FirstOrDefault(c => c.Id == id);
+            var comanda = _context.Comandas.Select(c => new ComandaCreateResponse
+            {
+                Id = c.Id,
+                NomeCliente = c.NomeCliente,
+                NumeroMesa = c.NumeroMesa,
+                Items = c.Items.Select(i => new ComandaItemResponse
+                {
+                    Id = i.Id,
+                    Titulo = _context.CardapioItems.FirstOrDefault(ci => ci.Id == i.CardapioItemId)!.Titulo
+                }).ToList()
+            }).FirstOrDefault(c => c.Id == id);
 
             if (comanda is null)
             {
