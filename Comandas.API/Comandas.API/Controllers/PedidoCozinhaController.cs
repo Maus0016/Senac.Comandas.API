@@ -20,7 +20,24 @@ namespace Comandas.API.Controllers
         [HttpGet]
         public IResult GetPedidoCozinha()
         {
-            var pedidoCozinha = _context.PedidoCozinhas.ToList();
+            var pedidoCozinha = _context.PedidoCozinhas
+                .Select(p => new PedidoCozinhaResponse
+                {
+                    Id = p.Id,
+                    ComandaId = p.ComandaId,
+                    Itens = p.Itens
+                    .Select(pi => new PedidoCozinhaItemResponse
+                    {
+                        Id = pi.Id,
+                        Titulo = _context.CardapioItems.First(ci => ci.Id == 
+                           
+                        _context.ComandaItems.First(ci => ci.Id == pi.ComandaItemId).CardapioItemId
+
+                        )!.Titulo
+
+                    }).ToList()
+                })
+            .ToList();
             return Results.Ok(pedidoCozinha);
         }
         
@@ -28,7 +45,10 @@ namespace Comandas.API.Controllers
         [HttpGet("{id}")]
         public IResult Get(int id)
         {
-            var pedidocozinha = _context.PedidoCozinhas.FirstOrDefault(p => p.Id == id);
+            var pedidocozinha = _context.PedidoCozinhas.Select(p => new PedidoCozinhaResponse
+            {
+                ComandaId = p.ComandaId
+            }).FirstOrDefault(p => p.Id == id);
             if (pedidocozinha is null)
             {
                 return Results.NotFound("Pedido de cozinha não encontrado");
