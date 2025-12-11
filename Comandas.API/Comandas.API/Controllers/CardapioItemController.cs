@@ -55,16 +55,18 @@ namespace Comandas.API.Controllers
             return Results.Ok(cardapio);
         }
 
-        // POST api/<CardapioItemController>
+
+        // Substitua o método Post pelo código abaixo para corrigir a validação do preço negativo
         [HttpPost]
         public IResult Post([FromBody] CardapioItemCreateRequest cardapio)
         {
             if (cardapio.Titulo.Length < 3)
-                Results.BadRequest("O titulo deve ter no minimo 3 caracteres.");
+                return Results.BadRequest("O titulo deve ter no minimo 3 caracteres.");
             if (cardapio.Descricao.Length < 5)
-                Results.BadRequest("A descricao do cardápio deve ter no minimo 5 caracteres.");
+                return Results.BadRequest("A descricao do cardápio deve ter no minimo 5 caracteres.");
+
             if (cardapio.Preco <= 0)
-                Results.BadRequest("O preço deve ser maior que zero.");
+                return Results.BadRequest("O preço deve ser maior que zero."); // Corrigido: adicionado return
 
             //VALIDAÇÃO DE CATEGORIA SE FOR PREENCHIDA
             if (cardapio.CategoriaCardapioId.HasValue)
@@ -74,7 +76,7 @@ namespace Comandas.API.Controllers
                 if (categoriaExists is null)
                     return Results.BadRequest("Categoria de cardápio inválida.");
             }
-            
+
             var cardapioItem = new CardapioItem
             {
                 Titulo = cardapio.Titulo,
@@ -83,7 +85,7 @@ namespace Comandas.API.Controllers
                 PossuiPreparo = cardapio.PossuiPreparo,
                 CategoriaCardapioId = cardapio.CategoriaCardapioId
             };
-           _context.CardapioItems.Add(cardapioItem);
+            _context.CardapioItems.Add(cardapioItem);
             _context.SaveChanges();
             return Results.Created($"/api/cardapio/{cardapioItem.Id}", cardapioItem);
         }
